@@ -1,15 +1,26 @@
+//React компоненты
+import {useEffect, useState} from 'react';
+import { Switch, Route, Redirect, useHistory } from 'react-router-dom'
+
+//Родные компоненты
 import Header from "./Header.js"
 import Main from "./Main.js"
 import Footer from "./Footer.js"
-import {useEffect, useState} from 'react';
 import ImagePopup from "./ImagePopup.js";
-import { api } from "../utils/Api.js";
-import { CurrentUserContext } from "../contexts/CurrentUserContext.js";
 import EditProfilePopup from "./EditProfilePopup.js";
 import EditAvatarPopup from "./EditAvatarPopup.js";
 import AddPlacePopup from "./AddPlacePopup.js";
 
+//Контексты
+import { CurrentUserContext } from "../contexts/CurrentUserContext.js";
+
+//Api
+import { api } from "../utils/Api.js";
+
 function App() {
+
+  
+  const history = useHistory()
 
   //Данные о пользователе
   const [currentUser, setCurrentUser] = useState({});
