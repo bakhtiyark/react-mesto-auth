@@ -24,7 +24,8 @@ function App() {
 
   //Данные о пользователе
   const [currentUser, setCurrentUser] = useState({});
-
+  const [loggedIn, setLoggedIn] = useState(false)
+  
   //Карты
   const [cards, setCards] = useState([]);
   
@@ -35,6 +36,7 @@ function App() {
   const [isAvatarPopupOpen, setAvatarPopupOpen] = useState(false)
   const [isAddPlacePopupOpen, setAddPlacePopupOpen] = useState(false)
   const [isProfilePopupOpen, setProfilePopupOpen] = useState(false)
+  const [isInfoTooltipPopupOpen, setIsInfoTooltipPopupOpen] = useState(false)
 
   useEffect(() => {
     api.getUserInfo().then((data) => {
