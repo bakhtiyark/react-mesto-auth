@@ -11,20 +11,31 @@ import EditProfilePopup from "./EditProfilePopup.js";
 import EditAvatarPopup from "./EditAvatarPopup.js";
 import AddPlacePopup from "./AddPlacePopup.js";
 
+import ProtectedRoute from './ProtectedRoute.js';
+import Register from './Register.js';
+import Login from './Login.js';
+import InfoTooltip from './InfoTooltip.js';
+
 //Контексты
 import { CurrentUserContext } from "../contexts/CurrentUserContext.js";
 
 //Api
 import { api } from "../utils/Api.js";
+import auth from "../utils/Auth.js"
+
+// Иконки статуса
+import successIcon from "../images/success-icon.svg"
+import failureIcon from "../images/failure-icon.svg"
 
 function App() {
 
-  
   const history = useHistory()
 
   //Данные о пользователе
   const [currentUser, setCurrentUser] = useState({});
   const [loggedIn, setLoggedIn] = useState(false)
+  const [userEmail, setUserEmail] = useState('')
+
   
   //Карты
   const [cards, setCards] = useState([]);
@@ -37,6 +48,9 @@ function App() {
   const [isAddPlacePopupOpen, setAddPlacePopupOpen] = useState(false)
   const [isProfilePopupOpen, setProfilePopupOpen] = useState(false)
   const [isInfoTooltipPopupOpen, setIsInfoTooltipPopupOpen] = useState(false)
+
+  // Сообщение статуса 
+  const [message, setMessage] = useState({});
 
   useEffect(() => {
     api.getUserInfo().then((data) => {
@@ -138,10 +152,70 @@ function App() {
     })
   }
 
+  // Регистрация 
+  function handleRegistration(password, email) {
+    auth
+      .register(password, email)
+      .then(res => {
+        if (res) {
+          setMessage({
+            imgInfo: successIcon,
+            text: 'Вы успешно зарегистрировались!' 
+          })
+          history.push('/sign-in')
+        }
+      })
+      .catch(setMessage({
+        imgInfo: failureIcon,
+        text: 'Что-то пошло не так! Попробуйте ещё раз.' 
+      }))
+      .finally(() => setIsInfoTooltipPopupOpen(true))
+  }
+
+  //Вход по логину
+  function handleLogin(password, email) {
+    auth
+      .login(password, email)
+      .then(res => {
+        if(res.token) {
+          localStorage.setItem('token', res.token)
+          setUserEmail(email)
+          setLoggedIn(true)
+        } else {
+          setMessage({
+            imgInfo: failureIcon, 
+            text: 'Что-то пошло не так! Попробуйте ещё раз.' 
+          })
+          setIsInfoTooltipPopupOpen(true)
+        }
+      })
+      .catch((err) => console.log(err))
+  }
+
+  //Выход из аккаунта
+
+  function handleSignOut() {
+    setLoggedIn(false)
+    localStorage.removeItem('token')
+    history.push('/sign-in')
+  }
+
+
   return (
     <CurrentUserContext.Provider value={currentUser}>
       <div className="page">
-        <Header />
+        <Header onSignOut={handleSignOut} userEmail={userEmail} />
+        <Switch>
+          <Route path="/sign-up">
+            <Register onRegistration={handleRegistration} />
+          </Route>
+          <Route path="/sign-in">
+            <Login onLogin={handleLogin} />
+          </Route>
+          <Route>{loggedIn ? <Redirect to="/" />: <Redirect to="/sign-in" />}</Route>
+        </Switch>
+
+
         <EditProfilePopup isOpen={isProfilePopupOpen} onClose={closePopups} onUpdateUser={handleUpdateUser} />
         <EditAvatarPopup isOpen={isAvatarPopupOpen} onClose={closePopups} onUpdateAvatar={handleAvatarUpdate} />
         <AddPlacePopup isOpen={isAddPlacePopupOpen} onClose={closePopups} onSubmitPlace={handleAddPlaceSubmit} />
