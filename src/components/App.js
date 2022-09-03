@@ -1,6 +1,6 @@
 //React компоненты
 import { useEffect, useState } from 'react';
-import { Switch, Route, Redirect, useHistory, BrowserRouter as Router} from 'react-router-dom'
+import { Switch, Route, Redirect, useHistory, BrowserRouter } from 'react-router-dom'
 
 //Родные компоненты
 import Header from "./Header.js"
@@ -28,12 +28,12 @@ import successIcon from "../images/success-icon.svg"
 import failureIcon from "../images/failure-icon.svg"
 
 function App() {
-
-  let history = useHistory();
+  let history;
+  history = useHistory();
   //Данные о пользователе
   const [currentUser, setCurrentUser] = useState({});
-  const [loggedIn, setLoggedIn] = useState(false)
-  const [userEmail, setUserEmail] = useState('')
+  const [loggedIn, setLoggedIn] = useState(false);
+  const [userEmail, setUserEmail] = useState('');
 
 
   //Карты
@@ -214,9 +214,11 @@ function App() {
 
 
   return (
-  <CurrentUserContext.Provider value={currentUser}>
-    <Router>
-    <Switch>
+    <CurrentUserContext.Provider value={currentUser}>
+      
+      <Header onSignOut={handleSignOut} userEmail={userEmail} />
+
+        <Switch>
           <ProtectedRoute
             exact
             path="/"
@@ -230,7 +232,7 @@ function App() {
             cards={cards}
             onCardLike={handleCardLike}
             onCardDelete={handleCardDelete} />
-        
+
           <Route path="/sign-up">
             <Register onRegistration={handleRegistration} />
           </Route>
@@ -239,10 +241,8 @@ function App() {
           </Route>
           <Route path="*">
             {loggedIn ? <Redirect to="/" /> : <Redirect to="/sign-in" />}
-            </Route>
+          </Route>
         </Switch>
-        </Router>
-      <Header onSignOut={handleSignOut} userEmail={userEmail} />
       <EditProfilePopup isOpen={isProfilePopupOpen} onClose={closePopups} onUpdateUser={handleUpdateUser} />
       <EditAvatarPopup isOpen={isAvatarPopupOpen} onClose={closePopups} onUpdateAvatar={handleAvatarUpdate} />
       <AddPlacePopup isOpen={isAddPlacePopupOpen} onClose={closePopups} onSubmitPlace={handleAddPlaceSubmit} />
