@@ -1,6 +1,6 @@
 //React компоненты
-import {useEffect, useState} from 'react';
-import { Switch, Route, Redirect, useHistory, BrowserRouter } from 'react-router-dom'
+import { useEffect, useState } from 'react';
+import { Switch, Route, Redirect, useHistory, BrowserRouter as Router} from 'react-router-dom'
 
 //Родные компоненты
 import Header from "./Header.js"
@@ -29,17 +29,16 @@ import failureIcon from "../images/failure-icon.svg"
 
 function App() {
 
-  const history = useHistory()
-
+  let history = useHistory();
   //Данные о пользователе
   const [currentUser, setCurrentUser] = useState({});
   const [loggedIn, setLoggedIn] = useState(false)
   const [userEmail, setUserEmail] = useState('')
 
-  
+
   //Карты
   const [cards, setCards] = useState([]);
-  
+
   //Раскрытая карта
   const [selectedCard, setSelectedCard] = useState({})
 
@@ -53,22 +52,16 @@ function App() {
   const [message, setMessage] = useState({});
 
   useEffect(() => {
-    api.getUserInfo().then((data) => {
-      setCurrentUser(data);
-    }).catch((err) => {
-      console.log(err);
-    });
-  }, []);
-
-
-  useEffect(() => {
-    api.getInitialCards().then((res) => {
-      //console.dir(res)
-      setCards(res)
-    }).catch((err) => {
-      console.log(err);
-    })
-  }, [])
+    handleTokenValidation()
+    if (!loggedIn) {
+      api.getAllData()
+        .then(([data, user]) => {
+          setCards(data)
+          setCurrentUser(user)
+        })
+        .catch(err => console.log(err))
+    }
+  })
 
 
   // Открытие соответствующих попапов
@@ -91,6 +84,7 @@ function App() {
     setAddPlacePopupOpen(false)
     setProfilePopupOpen(false)
     setSelectedCard({})
+    setIsInfoTooltipPopupOpen(false)
     //console.log("lala")
   }
   function openCardPopup(card) {
@@ -152,6 +146,24 @@ function App() {
     })
   }
 
+  //Токен
+  function handleTokenValidation() {
+    const token = localStorage.getItem("token")
+    if (token) {
+      auth
+        .tokenValid(token)
+        .then((res) => {
+          if (res) {
+            setLoggedIn(true)
+            setUserEmail(res.data.email)
+            history.push("/")
+          }
+        }).catch((err) => {
+          console.log(err)
+        })
+    }
+  }
+
   // Регистрация 
   function handleRegistration(password, email) {
     auth
@@ -160,14 +172,14 @@ function App() {
         if (res) {
           setMessage({
             imgInfo: successIcon,
-            text: 'Вы успешно зарегистрировались!' 
+            text: 'Вы успешно зарегистрировались!'
           })
           history.push('/sign-in')
         }
       })
       .catch(setMessage({
         imgInfo: failureIcon,
-        text: 'Что-то пошло не так! Попробуйте ещё раз.' 
+        text: 'Что-то пошло не так! Попробуйте ещё раз.'
       }))
       .finally(() => setIsInfoTooltipPopupOpen(true))
   }
@@ -177,14 +189,14 @@ function App() {
     auth
       .login(password, email)
       .then(res => {
-        if(res.token) {
+        if (res.token) {
           localStorage.setItem('token', res.token)
           setUserEmail(email)
           setLoggedIn(true)
         } else {
           setMessage({
-            imgInfo: failureIcon, 
-            text: 'Что-то пошло не так! Попробуйте ещё раз.' 
+            imgInfo: failureIcon,
+            text: 'Что-то пошло не так! Попробуйте ещё раз.'
           })
           setIsInfoTooltipPopupOpen(true)
         }
@@ -202,48 +214,50 @@ function App() {
 
 
   return (
-    <CurrentUserContext.Provider value={currentUser}>
-      
-      <div className="page">
-      <BrowserRouter>
-        <Header onSignOut={handleSignOut} userEmail={userEmail} />
-        <Switch>
+  <CurrentUserContext.Provider value={currentUser}>
+    <Router>
+    <Switch>
           <ProtectedRoute
-          exact
-          path="/"
-          loggedIn={loggedIn}
-          component={Main} 
-          replaceAvatar={replaceAvatar}
-          addPlace={addPlace}
-          openProfilePopup={openProfilePopup}
-          closePopups={closePopups}
-          onCardClick={openCardPopup}
-          cards={cards}
-          onCardLike={handleCardLike}
-          onCardDelete={handleCardDelete}/>
-
+            exact
+            path="/"
+            loggedIn={loggedIn}
+            component={Main}
+            replaceAvatar={replaceAvatar}
+            addPlace={addPlace}
+            openProfilePopup={openProfilePopup}
+            closePopups={closePopups}
+            onCardClick={openCardPopup}
+            cards={cards}
+            onCardLike={handleCardLike}
+            onCardDelete={handleCardDelete} />
+        
           <Route path="/sign-up">
             <Register onRegistration={handleRegistration} />
           </Route>
           <Route path="/sign-in">
             <Login onLogin={handleLogin} />
           </Route>
-          <Route>{loggedIn ? <Redirect to="/" />: <Redirect to="/sign-in" />}</Route>
+          <Route path="*">
+            {loggedIn ? <Redirect to="/" /> : <Redirect to="/sign-in" />}
+            </Route>
         </Switch>
-        </BrowserRouter>
+        </Router>
+      <Header onSignOut={handleSignOut} userEmail={userEmail} />
+      <EditProfilePopup isOpen={isProfilePopupOpen} onClose={closePopups} onUpdateUser={handleUpdateUser} />
+      <EditAvatarPopup isOpen={isAvatarPopupOpen} onClose={closePopups} onUpdateAvatar={handleAvatarUpdate} />
+      <AddPlacePopup isOpen={isAddPlacePopupOpen} onClose={closePopups} onSubmitPlace={handleAddPlaceSubmit} />
+      <InfoTooltip isOpen={isInfoTooltipPopupOpen} onClose={closePopups} imgInfo={message.imgInfo} textInfo={message.text}
+      />
 
-        <EditProfilePopup isOpen={isProfilePopupOpen} onClose={closePopups} onUpdateUser={handleUpdateUser} />
-        <EditAvatarPopup isOpen={isAvatarPopupOpen} onClose={closePopups} onUpdateAvatar={handleAvatarUpdate} />
-        <AddPlacePopup isOpen={isAddPlacePopupOpen} onClose={closePopups} onSubmitPlace={handleAddPlaceSubmit} />
 
+      <ImagePopup card={selectedCard} onClose={closePopups}></ImagePopup>
 
-        <ImagePopup card={selectedCard} onClose={closePopups}></ImagePopup>
+      <Footer />
 
-        <Footer />
-        
-        <script type="module" src="./pages/index.js"></script>
-      </div>
-    </CurrentUserContext.Provider>);
+      <script type="module" src="./pages/index.js"></script>
+    </CurrentUserContext.Provider>
+
+  );
 }
 
 export default App;
