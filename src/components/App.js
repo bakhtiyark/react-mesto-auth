@@ -1,6 +1,6 @@
 //React компоненты
 import {useEffect, useState} from 'react';
-import { Switch, Route, Redirect, useHistory } from 'react-router-dom'
+import { Switch, Route, Redirect, useHistory, BrowserRouter } from 'react-router-dom'
 
 //Родные компоненты
 import Header from "./Header.js"
@@ -203,9 +203,25 @@ function App() {
 
   return (
     <CurrentUserContext.Provider value={currentUser}>
+      
       <div className="page">
+      <BrowserRouter>
         <Header onSignOut={handleSignOut} userEmail={userEmail} />
         <Switch>
+          <ProtectedRoute
+          exact
+          path="/"
+          loggedIn={loggedIn}
+          component={Main} 
+          replaceAvatar={replaceAvatar}
+          addPlace={addPlace}
+          openProfilePopup={openProfilePopup}
+          closePopups={closePopups}
+          onCardClick={openCardPopup}
+          cards={cards}
+          onCardLike={handleCardLike}
+          onCardDelete={handleCardDelete}/>
+
           <Route path="/sign-up">
             <Register onRegistration={handleRegistration} />
           </Route>
@@ -214,27 +230,17 @@ function App() {
           </Route>
           <Route>{loggedIn ? <Redirect to="/" />: <Redirect to="/sign-in" />}</Route>
         </Switch>
-
+        </BrowserRouter>
 
         <EditProfilePopup isOpen={isProfilePopupOpen} onClose={closePopups} onUpdateUser={handleUpdateUser} />
         <EditAvatarPopup isOpen={isAvatarPopupOpen} onClose={closePopups} onUpdateAvatar={handleAvatarUpdate} />
         <AddPlacePopup isOpen={isAddPlacePopupOpen} onClose={closePopups} onSubmitPlace={handleAddPlaceSubmit} />
 
-        <Main
-          replaceAvatar={replaceAvatar}
-          addPlace={addPlace}
-          openProfilePopup={openProfilePopup}
-          closePopups={closePopups}
-          onCardClick={openCardPopup}
-          cards={cards}
-          onCardLike={handleCardLike}
-          onCardDelete={handleCardDelete}
-        />
 
         <ImagePopup card={selectedCard} onClose={closePopups}></ImagePopup>
 
         <Footer />
-
+        
         <script type="module" src="./pages/index.js"></script>
       </div>
     </CurrentUserContext.Provider>);
