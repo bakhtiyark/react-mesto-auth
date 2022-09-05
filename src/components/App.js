@@ -35,7 +35,6 @@ function App() {
   const [loggedIn, setLoggedIn] = useState(false);
   const [userEmail, setUserEmail] = useState('');
 
-
   //Карты
   const [cards, setCards] = useState([]);
 
@@ -47,6 +46,7 @@ function App() {
   const [isAddPlacePopupOpen, setAddPlacePopupOpen] = useState(false)
   const [isProfilePopupOpen, setProfilePopupOpen] = useState(false)
   const [isInfoTooltipPopupOpen, setIsInfoTooltipPopupOpen] = useState(false)
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   // Сообщение статуса 
   const [message, setMessage] = useState({});
@@ -93,22 +93,38 @@ function App() {
 
   //Установка данных пользователей
   function handleUpdateUser(data) {
+    setIsSubmitting(true)
     api.setUserInfo(data).then((data) => {
       setCurrentUser(data)
-    }).catch((err) => {
+    }).then(()=> closePopups()).catch((err) => {
       console.log(err);
+    }).finally(() =>{
+      setIsSubmitting(false)
     });
-    closePopups();
+  }
+
+  // Добавление места
+  function handleAddPlaceSubmit(data) {
+    setIsSubmitting(true)
+    api.createCard(data).then((newCard) => {
+      setCards([newCard, ...cards]);
+    }).then(()=> closePopups()).catch((err) => {
+      console.log(err);
+    }).finally(() =>{
+      setIsSubmitting(false)
+    });
   }
 
   //Аптейт аватара
   function handleAvatarUpdate(data) {
+    setIsSubmitting(true)
     api.setUserAvatar(data).then((link) => {
       setCurrentUser(link)
-    }).catch((err) => {
+    }).then(()=> closePopups()).catch((err) => {
       console.log(err);
+    }).finally(() =>{
+      setIsSubmitting(false)
     });
-    closePopups();
   }
 
   // Лайканье
@@ -136,15 +152,7 @@ function App() {
       });
   }
 
-  // Добавление места
-  function handleAddPlaceSubmit(data) {
-    api.createCard(data).then((newCard) => {
-      setCards([newCard, ...cards]);
-      closePopups();
-    }).catch((err) => {
-      console.log(err);
-    })
-  }
+
 
   //Токен
   function handleTokenValidation() {
@@ -243,9 +251,9 @@ function App() {
             {loggedIn ? <Redirect to="/" /> : <Redirect to="/sign-in" />}
           </Route>
         </Switch>
-      <EditProfilePopup isOpen={isProfilePopupOpen} onClose={closePopups} onUpdateUser={handleUpdateUser} />
-      <EditAvatarPopup isOpen={isAvatarPopupOpen} onClose={closePopups} onUpdateAvatar={handleAvatarUpdate} />
-      <AddPlacePopup isOpen={isAddPlacePopupOpen} onClose={closePopups} onSubmitPlace={handleAddPlaceSubmit} />
+      <EditProfilePopup isOpen={isProfilePopupOpen} isSubmitting={isSubmitting} onClose={closePopups} onUpdateUser={handleUpdateUser} />
+      <EditAvatarPopup isOpen={isAvatarPopupOpen} isSubmitting={isSubmitting} onClose={closePopups} onUpdateAvatar={handleAvatarUpdate} />
+      <AddPlacePopup isOpen={isAddPlacePopupOpen} isSubmitting={isSubmitting} onClose={closePopups} onSubmitPlace={handleAddPlaceSubmit} />
       <InfoTooltip isOpen={isInfoTooltipPopupOpen} onClose={closePopups} imgInfo={message.imgInfo} textInfo={message.text}
       />
 

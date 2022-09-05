@@ -8,5 +8,7 @@
     .header__bar {
         flex-direction: column;
         display: none;
+        justify-content: center;
+        align-items: center;
     }
 }

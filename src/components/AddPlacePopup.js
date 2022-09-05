@@ -32,7 +32,7 @@ export default function AddPlacePopup(props) {
     <PopupWithForm
       name="new-card"
       title="Добавить место"
-      buttonText="Сохранить"
+      buttonText={props.isSubmitting ? 'Сохранение...' :"Сохранить"}
       onSubmit={handleSubmit}
       isOpen={props.isOpen}
       onClose={props.onClose}

@@ -1,9 +1,10 @@
 import logo from "../images/header-logo.svg"
 import { Switch, Route, Link } from 'react-router-dom'
-import toggleList from "../utils/Navbar";
+import toggleList from "../utils/toggleList";
 function Header({ onSignOut, userEmail }) {
   return (
     <header className="header">
+      <button type="button" className="header__bar_mobile-button" id="navbar-toggle" onClick={toggleList}></button>
       <img src={logo} alt="Логотип Место" className="header__logo" />
       <Switch>
         <Route path="/sign-in">
@@ -23,9 +24,9 @@ function Header({ onSignOut, userEmail }) {
               Выйти
             </Link>
           </div>
-          <Link onClick={toggleList} className="header__bar_mobile"></Link>
         </Route>
       </Switch>
+
     </header>
   );
 }
