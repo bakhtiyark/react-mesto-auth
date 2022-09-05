@@ -2,6 +2,12 @@ class Auth {
     constructor({ baseUrl }) {
       this._baseUrl = baseUrl
     }
+    _errorCheck = res => {
+      if (res.ok) {
+        return res.json()
+      }
+      return Promise.reject(new Error("Ошибка " + res.status))
+    }
   
     register(password, email) {
       return fetch(
@@ -17,13 +23,7 @@ class Auth {
           })
         }
       )
-      .then((res) => {
-        if (res.ok) {
-          return res.json();
-        }
-        
-      })
-      .catch((err) => console.log(err));
+      .then(res => this._errorCheck(res))
     }
   
     login(password, email) {
@@ -40,9 +40,7 @@ class Auth {
           })
         }
       )
-      .then((res) => {
-        return res.json();
-      })
+      .then(res => this._errorCheck(res))
     }
   
     tokenValid(token) {
@@ -56,9 +54,7 @@ class Auth {
           }
         }
       )
-      .then(res => {
-        return res.json()
-      })
+      .then(res => this._errorCheck(res))
     }
   }
   
