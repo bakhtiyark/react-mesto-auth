@@ -1,6 +1,6 @@
 //React компоненты
 import { useEffect, useState } from 'react';
-import { Switch, Route, Redirect, useHistory, BrowserRouter } from 'react-router-dom'
+import { Switch, Route, Redirect, useHistory } from 'react-router-dom'
 
 //Родные компоненты
 import Header from "./Header.js"
