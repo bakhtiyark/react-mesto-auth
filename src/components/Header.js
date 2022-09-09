@@ -4,6 +4,7 @@ import toggleList from "../utils/toggleList";
 function Header({ onSignOut, userEmail }) {
   return (
     <header className="header">
+      
       <button type="button" className="header__bar_mobile-button" id="navbar-toggle" onClick={toggleList}></button>
       <img src={logo} alt="Логотип Место" className="header__logo" />
       <Switch>

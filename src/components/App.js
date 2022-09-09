@@ -34,6 +34,7 @@ function App() {
   const [currentUser, setCurrentUser] = useState({});
   const [loggedIn, setLoggedIn] = useState(false);
   const [userEmail, setUserEmail] = useState('');
+  const languageSelected = {language:"en"};
 
   //Карты
   const [cards, setCards] = useState([]);
@@ -219,9 +220,12 @@ function App() {
     localStorage.removeItem('token')
     history.push('/sign-in')
   }
-
+  
+  const currentUserWithLang = Object.assign(currentUser, languageSelected)
+  console.dir(currentUserWithLang)
 
   return (
+    
     <CurrentUserContext.Provider value={currentUser}>
       
       <Header onSignOut={handleSignOut} userEmail={userEmail} />
