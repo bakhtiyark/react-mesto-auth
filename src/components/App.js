@@ -26,6 +26,7 @@ import auth from "../utils/Auth.js"
 // Иконки статуса
 import successIcon from "../images/success-icon.svg"
 import failureIcon from "../images/failure-icon.svg"
+import { TranslationContext } from '../contexts/TranslationContext.js';
 
 function App() {
   let history;
@@ -34,7 +35,7 @@ function App() {
   const [currentUser, setCurrentUser] = useState({});
   const [loggedIn, setLoggedIn] = useState(false);
   const [userEmail, setUserEmail] = useState('');
-  const languageSelected = {language:"en"};
+  const [lang, setLang] = useState({})
 
   //Карты
   const [cards, setCards] = useState([]);
@@ -97,9 +98,9 @@ function App() {
     setIsSubmitting(true)
     api.setUserInfo(data).then((data) => {
       setCurrentUser(data)
-    }).then(()=> closePopups()).catch((err) => {
+    }).then(() => closePopups()).catch((err) => {
       console.log(err);
-    }).finally(() =>{
+    }).finally(() => {
       setIsSubmitting(false)
     });
   }
@@ -109,9 +110,9 @@ function App() {
     setIsSubmitting(true)
     api.createCard(data).then((newCard) => {
       setCards([newCard, ...cards]);
-    }).then(()=> closePopups()).catch((err) => {
+    }).then(() => closePopups()).catch((err) => {
       console.log(err);
-    }).finally(() =>{
+    }).finally(() => {
       setIsSubmitting(false)
     });
   }
@@ -121,9 +122,9 @@ function App() {
     setIsSubmitting(true)
     api.setUserAvatar(data).then((link) => {
       setCurrentUser(link)
-    }).then(()=> closePopups()).catch((err) => {
+    }).then(() => closePopups()).catch((err) => {
       console.log(err);
-    }).finally(() =>{
+    }).finally(() => {
       setIsSubmitting(false)
     });
   }
@@ -220,15 +221,12 @@ function App() {
     localStorage.removeItem('token')
     history.push('/sign-in')
   }
-  
-  const currentUserWithLang = Object.assign(currentUser, languageSelected)
-  console.dir(currentUserWithLang)
 
   return (
-    
-    <CurrentUserContext.Provider value={currentUser}>
-      
-      <Header onSignOut={handleSignOut} userEmail={userEmail} />
+    <TranslationContext.Provider value={""}>
+      <CurrentUserContext.Provider value={currentUser}>
+
+        <Header onSignOut={handleSignOut} userEmail={userEmail} />
 
         <Switch>
           <ProtectedRoute
@@ -255,20 +253,41 @@ function App() {
             {loggedIn ? <Redirect to="/" /> : <Redirect to="/sign-in" />}
           </Route>
         </Switch>
-      <EditProfilePopup isOpen={isProfilePopupOpen} isSubmitting={isSubmitting} onClose={closePopups} onUpdateUser={handleUpdateUser} />
-      <EditAvatarPopup isOpen={isAvatarPopupOpen} isSubmitting={isSubmitting} onClose={closePopups} onUpdateAvatar={handleAvatarUpdate} />
-      <AddPlacePopup isOpen={isAddPlacePopupOpen} isSubmitting={isSubmitting} onClose={closePopups} onSubmitPlace={handleAddPlaceSubmit} />
-      <InfoTooltip isOpen={isInfoTooltipPopupOpen} onClose={closePopups} imgInfo={message.imgInfo} textInfo={message.text}
-      />
+
+        <EditProfilePopup
+          isOpen={isProfilePopupOpen}
+          isSubmitting={isSubmitting}
+          onClose={closePopups}
+          onUpdateUser={handleUpdateUser} />
+        <EditAvatarPopup
+          isOpen={isAvatarPopupOpen}
+          isSubmitting={isSubmitting}
+          onClose={closePopups}
+          onUpdateAvatar={handleAvatarUpdate} />
+
+        <AddPlacePopup
+          isOpen={isAddPlacePopupOpen}
+          isSubmitting={isSubmitting}
+          onClose={closePopups}
+          onSubmitPlace={handleAddPlaceSubmit} />
+
+        <InfoTooltip
+          isOpen={isInfoTooltipPopupOpen}
+          onClose={closePopups}
+          imgInfo={message.imgInfo}
+          textInfo={message.text}
+        />
 
 
-      <ImagePopup card={selectedCard} onClose={closePopups}></ImagePopup>
+        <ImagePopup
+          card={selectedCard}
+          onClose={closePopups}></ImagePopup>
 
-      <Footer />
+        <Footer />
 
-      <script type="module" src="./pages/index.js"></script>
-    </CurrentUserContext.Provider>
-
+        <script type="module" src="./pages/index.js"></script>
+      </CurrentUserContext.Provider>
+    </TranslationContext.Provider>
   );
 }
 
