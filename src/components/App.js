@@ -222,6 +222,11 @@ function App() {
     history.push('/sign-in')
   }
 
+  /*
+  let currentUserWithLang = currentUser.push(lang)
+  console.log(currentUserWithLang)
+  */
+
   return (
     <TranslationContext.Provider value={""}>
       <CurrentUserContext.Provider value={currentUser}>
