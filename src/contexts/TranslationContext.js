@@ -14,7 +14,7 @@ export const translations = {
         editAvatarTitle: "Обновить аватар",
 
         saveButton: 'Сохранить',
-        saveButtoninProcess: 'Сохранение..',
+        saveButtoninProcess: 'Сохранение...',
         imagePlaceholder: "Ссылка на картинку",
 
         addCardTitle: "Добавить место",

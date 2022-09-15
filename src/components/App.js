@@ -142,6 +142,7 @@ function App() {
       console.log(err);
     });
   }
+  
   // Удаление карты
   function handleCardDelete(card) {
     api
