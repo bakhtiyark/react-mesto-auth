@@ -3,6 +3,13 @@ export class Api {
     this._url = baseUrl
     this._token = token
   }
+  _getHeaders() {
+    const token = localStorage.getItem('token');
+    return {
+      'Authorization': `Bearer ${token}`,
+      ...this._token,
+    };
+  }
 
   // Проверка на ошибку
   _errorCheck = res => {
@@ -21,7 +28,7 @@ export class Api {
   getInitialCards() {
     return fetch(`${this._url}/cards`,
       {
-        headers: this._token
+        headers: this._getHeaders(),
       })
       .then(res => this._errorCheck(res));
   }
@@ -31,7 +38,7 @@ export class Api {
     return fetch(`${this._url}/cards`,
       {
         method: 'POST',
-        headers: this._token,
+        headers: this._getHeaders(),
         body: JSON.stringify({
           name: card.name,
           link: card.link
@@ -42,7 +49,7 @@ export class Api {
   //Получение данных о пользователе
   getUserInfo() {
     return fetch(`${this._url}/users/me`, {
-      headers: this._token,
+      headers: this._getHeaders(),
     })
       .then(res => this._errorCheck(res));
   }
@@ -52,7 +59,7 @@ export class Api {
     return fetch(`${this._url}/users/me`,
       {
         method: 'PATCH',
-        headers: this._token,
+        headers: this._getHeaders(),
         body: JSON.stringify({
           name: data.name,
           about: data.about
@@ -64,7 +71,7 @@ export class Api {
     return fetch(`${this._url}/users/me/avatar`,
       {
         method: 'PATCH',
-        headers: this._token,
+        headers: this._getHeaders(),
         body: JSON.stringify(link)
       }).then(res => this._errorCheck(res))
   }
@@ -74,7 +81,7 @@ export class Api {
     return fetch(`${this._url}/cards/${id}/likes`,
     {
       method: (state) ? "PUT" :'DELETE',
-      headers: this._token
+      headers: this._getHeaders(),
     }).then(res => this._errorCheck(res))
   }
 
@@ -82,7 +89,7 @@ export class Api {
   deleteCard(id) {
     return fetch(`${this._url}/cards/${id}`, {
       method: "DELETE",
-      headers: this._token
+      headers: this._getHeaders()
     }).then(this._errorCheck).catch(err => console.log(err))
   }
 }
