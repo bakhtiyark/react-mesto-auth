@@ -59,7 +59,7 @@ class Auth {
   }
   
   const auth = new Auth({
-    baseUrl: "https://auth.nomoreparties.co"
+    baseUrl: "https://api.bakhtiyarkpr.nomoredomains.icu"
   })
   
   export default auth
