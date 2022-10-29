@@ -1,13 +1,13 @@
 export class Api {
-  constructor({ baseUrl, token }) {
+  constructor({ baseUrl, headers }) {
     this._url = baseUrl
-    this._token = token
+    this._headers = headers
   }
   _getHeaders() {
     const token = localStorage.getItem('token');
     return {
       'Authorization': `Bearer ${token}`,
-      ...this._token,
+      ...this._headers,
     };
   }
 
@@ -71,14 +71,14 @@ export class Api {
   }
 
   //Обновление пользователя
-  setUserInfo(data) {
+  setUserInfo({name, about}) {
     return fetch(`${this._url}/users/me`,
       {
         method: 'PATCH',
         headers: this._getHeaders(),
         body: JSON.stringify({
-          name: data.name,
-          about: data.about
+          name:name,
+          about:about
         })
       }).then((res) => {
         if (res.ok) {
@@ -87,13 +87,14 @@ export class Api {
       })
       .catch((err) => console.log(err));
   }
+  
   //Установка аватара
-  setUserAvatar(link) {
+  setUserAvatar(avatar) {
     return fetch(`${this._url}/users/me/avatar`,
       {
         method: 'PATCH',
         headers: this._getHeaders(),
-        body: JSON.stringify(link)
+        body: JSON.stringify({avatar})
       }).then((res) => {
         if (res.ok) {
           return res.json();
@@ -106,7 +107,7 @@ export class Api {
   changeLikeCardStatus(id, state){
     return fetch(`${this._url}/cards/${id}/likes`,
     {
-      method: (state) ? "PUT" :'DELETE',
+      method: state ? 'DELETE': "PUT" ,
       headers: this._getHeaders(),
     }).then((res) => {
       if (res.ok) {
@@ -115,7 +116,6 @@ export class Api {
     })
     .catch((err) => console.log(err));
   }
-
   //Удаление карточки
   deleteCard(id) {
     return fetch(`${this._url}/cards/${id}`, {
@@ -126,5 +126,8 @@ export class Api {
 }
 
 export const api = new Api({
-  baseUrl: 'https://api.bakhtiyarkpr.nomoredomains.icu'
+  baseUrl: 'https://api.bakhtiyarkpr.nomoredomains.icu',
+  headers: {
+    "Content-Type": "application/json",
+  }
 })
