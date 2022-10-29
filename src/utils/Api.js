@@ -95,8 +95,5 @@ export class Api {
 }
 
 export const api = new Api({
-  baseUrl: 'https://api.bakhtiyarkpr.nomoredomains.icu',
-  headers: {
-    'Content-Type': 'application/json'
-  }
+  baseUrl: 'https://api.bakhtiyarkpr.nomoredomains.icu'
 })

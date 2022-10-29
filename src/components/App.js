@@ -133,10 +133,10 @@ function App() {
 
   function handleCardLike(card) {
     // Снова проверяем, есть ли уже лайк на этой карточке
-    const isLiked = card.likes.some(i => i._id === currentUser._id);
+    const isLiked = card.likes.some(i => i === currentUser._id);
 
     // Отправляем запрос в API и получаем обновлённые данные карточки
-    api.changeLikeCardStatus(card._id, !isLiked).then((newCard) => {
+    api.changeLikeCardStatus(card._id, isLiked).then((newCard) => {
       setCards((state) => state.map((c) => c._id === card._id ? newCard : c));
     }).catch((err) => {
       console.log(err);
@@ -159,10 +159,10 @@ function App() {
 
   //Токен
   function handleTokenValidation() {
-    const token = localStorage.getItem("token")
-    if (token) {
+    const jwt = localStorage.getItem("jwt")
+    if (jwt) {
       auth
-        .tokenValid(token)
+        .tokenValid(jwt)
         .then((res) => {
           if (res) {
             setLoggedIn(true)
@@ -200,8 +200,8 @@ function App() {
     auth
       .login(password, email)
       .then(res => {
-        if (res.token) {
-          localStorage.setItem('token', res.token)
+        if (res.jwt) {
+          localStorage.setItem('jwt', res.jwt)
           setUserEmail(email)
           setLoggedIn(true)
         } else {
@@ -219,7 +219,7 @@ function App() {
 
   function handleSignOut() {
     setLoggedIn(false)
-    localStorage.removeItem('token')
+    localStorage.removeItem('jwt')
     history.push('/sign-in')
   }
 
@@ -293,7 +293,7 @@ function App() {
 
         <script type="module" src="./pages/index.js"></script>
       </CurrentUserContext.Provider>
-    </TranslationContext.Provider>
+      </TranslationContext.Provider>
   );
 }
 
