@@ -12,12 +12,13 @@ export class Api {
   }
 
   // Проверка на ошибку
-  _errorCheck = res => {
+  /* _errorCheck = res => {
     if (res.ok) {
       return res.json()
     }
     return Promise.reject(new Error("Ошибка " + res.status))
   }
+  */
 
   //Получение всех данных
   getAllData() {
@@ -30,7 +31,12 @@ export class Api {
       {
         headers: this._getHeaders(),
       })
-      .then(res => this._errorCheck(res));
+      .then((res) => {
+        if (res.ok) {
+          return res.json();
+        }
+      })
+      .catch((err) => console.log(err));
   }
 
   //Добавление карт
@@ -43,7 +49,12 @@ export class Api {
           name: card.name,
           link: card.link
         })
-      }).then(res => this._errorCheck(res))
+      }).then((res) => {
+        if (res.ok) {
+          return res.json();
+        }
+      })
+      .catch((err) => console.log(err));
   }
 
   //Получение данных о пользователе
@@ -51,7 +62,12 @@ export class Api {
     return fetch(`${this._url}/users/me`, {
       headers: this._getHeaders(),
     })
-      .then(res => this._errorCheck(res));
+    .then((res) => {
+      if (res.ok) {
+        return res.json();
+      }
+    })
+    .catch((err) => console.log(err));;
   }
 
   //Обновление пользователя
@@ -64,7 +80,12 @@ export class Api {
           name: data.name,
           about: data.about
         })
-      }).then(res => this._errorCheck(res))
+      }).then((res) => {
+        if (res.ok) {
+          return res.json();
+        }
+      })
+      .catch((err) => console.log(err));
   }
   //Установка аватара
   setUserAvatar(link) {
@@ -73,7 +94,12 @@ export class Api {
         method: 'PATCH',
         headers: this._getHeaders(),
         body: JSON.stringify(link)
-      }).then(res => this._errorCheck(res))
+      }).then((res) => {
+        if (res.ok) {
+          return res.json();
+        }
+      })
+      .catch((err) => console.log(err));
   }
 
   //Комбинированный метод для лайканья/снятия лайка
@@ -82,7 +108,12 @@ export class Api {
     {
       method: (state) ? "PUT" :'DELETE',
       headers: this._getHeaders(),
-    }).then(res => this._errorCheck(res))
+    }).then((res) => {
+      if (res.ok) {
+        return res.json();
+      }
+    })
+    .catch((err) => console.log(err));
   }
 
   //Удаление карточки
